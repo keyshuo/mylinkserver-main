@@ -16,7 +16,7 @@ type MySql struct {
 
 // NewMySql 新建连接，从连接池拿一个
 func NewMySql(msg string) (*MySql, error) {
-	mysqlTemp, err := sql.Open("mysql", "root:@Wx614481987@tcp(1.15.76.132:3306)/androidDatabase")
+	mysqlTemp, err := sql.Open("mysql", "androidDatabase:@Wx614481987@tcp(1.15.76.132:3306)/androidDatabase")
 	if err != nil {
 		return nil, err
 	}
