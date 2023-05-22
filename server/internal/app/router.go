@@ -48,21 +48,31 @@ func (serv *Server) Init() {
 
 		music.GET("getMusic", music2.GetMusic)
 	}
-
+	//动态
 	comment := serv.server.Group("/comment")
 	{
 
 		comment.GET("/getComment", community.GetComment)
 
+		comment.GET("/getCommentIndex", community.GetCommentIndex)
+
 		my := comment.Group("/my")
 		{
 			my.Use(AuthMiddleware)
 
+			//动态
 			my.GET("/getMyComment", community.GetMyComment)
 
 			my.GET("/createComment", community.CreateComment)
 
 			my.GET("/deleteComment", community.DeleteComment)
+
+			//评论
+			my.GET("getMyCommentIndex", community.GetMyCommentIndex)
+
+			my.GET("/createCommentIndex", community.CreateCommentIndex)
+
+			my.GET("/deleteCommentIndex", community.DeleteCommentIndex)
 		}
 	}
 

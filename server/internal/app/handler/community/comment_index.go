@@ -6,11 +6,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetComment(c *gin.Context) {
+func GetCommentIndex(c *gin.Context) {
 	page := c.Query("page")
+	username := c.Query("username") //发布动态的用户，被评论的人
+	time := c.Query("time")         //动态发布的时间
 	var pageInt int
 
-	result, msg := community.GetComment(page, pageInt)
+	result, msg := community.GetCommentIndex(page, pageInt, username, time)
 	if msg != "" {
 		httpRespone.WriteFailed(c, msg)
 		return
@@ -18,7 +20,7 @@ func GetComment(c *gin.Context) {
 	httpRespone.WriteOK(c, result)
 }
 
-func GetMyComment(c *gin.Context) {
+func GetMyCommentIndex(c *gin.Context) {
 	status := c.Value("status")
 	if status == "false" {
 		httpRespone.WriteFailed(c, "please login")
@@ -28,7 +30,7 @@ func GetMyComment(c *gin.Context) {
 	// fmt.Println(account)
 	page := c.Query("page")
 	var pageInt int
-	result, msg := community.GetMyComment(account, page, pageInt)
+	result, msg := community.GetMyCommentIndex(account, page, pageInt)
 	if msg != "" {
 		httpRespone.WriteFailed(c, msg)
 		return
@@ -36,32 +38,33 @@ func GetMyComment(c *gin.Context) {
 	httpRespone.WriteOK(c, result)
 }
 
-func CreateComment(c *gin.Context) {
+func CreateCommentIndex(c *gin.Context) {
 	status := c.Value("status")
 	if status == "false" {
 		httpRespone.WriteFailed(c, "please login")
 		return
 	}
 	comment := c.Query("comment")
-	time := c.Query("time")
+	date := c.Query("time")
 	account := c.Value("account").(string)
-	if msg := community.CreateComment(comment, time, account); msg != "" {
+	dateIndex := c.Query("date_index")
+	accountIndex := c.Query("account_index")
+	if msg := community.CreateCommentIndex(comment, date, account, accountIndex, dateIndex); msg != "" {
 		httpRespone.WriteFailed(c, msg)
 		return
 	}
 	httpRespone.WriteOK(c, nil)
 }
 
-// DeleteComment 删除动态
-func DeleteComment(c *gin.Context) {
+func DeleteCommentIndex(c *gin.Context) {
 	status := c.Value("status")
 	if status == "false" {
 		httpRespone.WriteFailed(c, "please login")
 		return
 	}
-	time := c.Query("time")
+	date := c.Query("time")
 	account := c.Value("account").(string)
-	if msg := community.DeleteComment(account, time); msg != "" {
+	if msg := community.DeleteCommentIndex(date, account); msg != "" {
 		httpRespone.WriteFailed(c, msg)
 		return
 	}
