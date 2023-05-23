@@ -68,7 +68,7 @@ func GetMyCommentIndex(account, page string, pageInt int) ([]interface{}, string
 	return result, ""
 }
 
-func CreateCommentIndex(comment, time, account, accountIndex, timeIndex string) string {
+func CreateCommentIndex(account, accountIndex, timeIndex, time, comment string) string {
 
 	//
 	msg := "insert into comment_index value (?,?,?,?,?);"
@@ -77,6 +77,7 @@ func CreateCommentIndex(comment, time, account, accountIndex, timeIndex string) 
 		return log.DatabaseConnFail
 	}
 	defer db.Close()
+	fmt.Println(account)
 	err = db.Exec(account, accountIndex, timeIndex, time, comment)
 	if log.ErrorLog(err) != nil {
 		return log.DatabaseExecFail
