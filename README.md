@@ -18,6 +18,6 @@
 
 启动程序请打开终端在根目录下，输入：go run server/cmd/main.go
 
-如果上传服务器后，服务器由于代理问题，无法成功download依赖，则可以查看GOPROXY官方指示——https://goproxy.io/zh/docs/getting-started.html
+一般的，在上传服务器后，服务器会由于无法访问外网的原因，无法成功download相关依赖包，可以查看GOPROXY官方文档解决该文档——https://goproxy.io/zh/docs/getting-started.html
 
 使用云服务器，而不用宝塔等面板软件，可以用nohup后台运行程序，将其日志输出重定向至指定文件。
