@@ -104,6 +104,8 @@ func (serv *Server) Init() {
 
 			my.GET("joinCompetition", netcompete.GetOrCreateRoom)
 
+			my.GET("OpponentFound", netcompete.OpponentFound)
+
 			my.GET("startGame", netcompete.HandlerWebsocket)
 
 			my.GET("finishGame", netcompete.FinishedCompetition)

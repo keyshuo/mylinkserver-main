@@ -125,7 +125,7 @@ func (sql *MySql) Close() {
 }
 
 func (newSql *MySql) UpdateMysql(msg string) error {
-	mysqlTemp, err := sql.Open("mysql", "root:@Wx614481987@tcp(1.15.76.132:3306)/androidDatabase")
+	mysqlTemp, err := sql.Open("mysql", "androidDatabase:@Wx614481987@tcp(1.15.76.132:3306)/androiddatabase")
 	if err != nil {
 		return err
 	}

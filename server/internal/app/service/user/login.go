@@ -6,7 +6,7 @@ import (
 )
 
 func Login(inputUser User) (string, string) {
-	msg := "select count(*) from user where account= ? and password=?;"
+	msg := "select username from user where account= ? and password=?;"
 	db, err := sql.NewMySql(msg)
 	if log.ErrorLog(err) != nil {
 		return "", log.DatabaseConnFail
@@ -16,7 +16,8 @@ func Login(inputUser User) (string, string) {
 	if log.ErrorLog(err) != nil {
 		return "", log.DatabaseSearchFail
 	}
-	if result[0] == "1" {
+	if len(result) == 1 {
+		inputUser.Username = result[0]
 		tokenString, err := GenerateToken(inputUser)
 		if log.ErrorLog(err) != nil {
 			return "", log.TokenGenerate

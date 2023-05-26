@@ -2,7 +2,6 @@ package netcompete
 
 import (
 	"MyLink_Server/server/internal/app/handler/httpRespone"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"strconv"
@@ -13,20 +12,26 @@ import (
 const topScore = 100
 
 func Test(c *gin.Context) {
-	fmt.Println("Rooms existed")
-	if Rooms[1] != nil {
-		fmt.Println(Rooms[1])
-	}
 	httpRespone.WriteOK(c, gin.H{
-		"msg": Rooms[1].Competition.Player1.username,
+		"msg": Rooms,
 	})
 }
+
+//设计思路：
+//双方交换sign，确定唯一房间号
+//直接设置房间属性，便于双方收发，
+//
 
 // HandlerWebsocket
 // 后面可以把player改为数组形式
 // 点击”准备“后会进入当前状态,不需要发送信息，携带token，对token进行鉴权解析即可
 // 如果对方掉线不连呢？新开线程对掉线状态检测
 func HandlerWebsocket(c *gin.Context) {
+	status := c.Value("status")
+	if status == "false" {
+		httpRespone.WriteFailed(c, "please login")
+		return
+	}
 	//flag代表对方是否准备
 	flag := false
 	//flag1代表是否双方是否准备就绪
@@ -38,8 +43,8 @@ func HandlerWebsocket(c *gin.Context) {
 	//temp用于websocket接收用户信号
 	var temp Player
 	//获取玩家所在房间号以及玩家名称
-	roomNumber, _ := strconv.Atoi(c.Query("room"))
-	username := c.Query("username")
+	roomNumber, _ := strconv.Atoi(c.Query("sign"))
+	username := c.Value("username").(string)
 	//升级websocket
 	conn, err := Upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
@@ -88,6 +93,7 @@ func HandlerWebsocket(c *gin.Context) {
 				"realtime": getOtherPlayerTime(username, Rooms[roomNumber].Competition),
 				"rival":    getOtherPlayerConnectionStatus(username, Rooms[roomNumber].Competition),
 			})
+			//发送结束状态，真实分数，比赛对手的连接状态，应该直接设置competition对象的内部，然后直接发送competition
 			return
 		default:
 			if !flag && getOtherPlayerConnectionStatus(username, Rooms[roomNumber].Competition) {
@@ -122,15 +128,15 @@ func HandlerWebsocket(c *gin.Context) {
 					break
 				}
 				//如果用户开始游戏
-				if temp.start == true {
+				if temp.Start == true {
 					//设置玩家一开始游戏状态
 					if pos == 1 {
-						Rooms[roomNumber].Competition.Player1.start = true
+						Rooms[roomNumber].Competition.Player1.Start = true
 						flag2 = true
 					}
 					//设置玩家二开始游戏状态
 					if pos == 2 {
-						Rooms[roomNumber].Competition.Player2.start = true
+						Rooms[roomNumber].Competition.Player2.Start = true
 						flag2 = true
 					}
 				}
@@ -138,7 +144,7 @@ func HandlerWebsocket(c *gin.Context) {
 
 			//接收到用户已经开始游戏时，一直读取用户发送的分数信息
 			//如果是玩家1就设置玩家1的分数，并将玩家2的分数发给他
-			if flag && flag1 && !flag2 && pos == 1 && Rooms[roomNumber].Competition.Player1.start {
+			if flag && flag1 && !flag2 && pos == 1 && Rooms[roomNumber].Competition.Player1.Start {
 				err := conn.ReadJSON(&temp)
 				if err != nil {
 					log.Println("Failed to read JSON from WebSocket:", err)
@@ -149,7 +155,7 @@ func HandlerWebsocket(c *gin.Context) {
 				if !flag3 && temp.Score == topScore {
 					//设置自己的结束状态，结束运行
 					setPlayerEnd(username, Rooms[roomNumber].Competition, true)
-					setPlayerTime(username, Rooms[roomNumber].Competition, temp.sumTime)
+					setPlayerTime(username, Rooms[roomNumber].Competition, temp.SumTime)
 					flag3 = true
 				} else if getOtherPlayerEnd(username, Rooms[roomNumber].Competition) {
 					//获取对方结束状态，若对方已结束完成，则服务端告知客户端用户，对方已完成
@@ -193,9 +199,9 @@ func HandlerWebsocket(c *gin.Context) {
 
 func setPlayerConnectionStatus(pos, roomNumber int, status bool) {
 	if pos == 1 {
-		Rooms[roomNumber].Competition.Player1.connStatus = status
+		Rooms[roomNumber].Competition.Player1.ConnStatus = status
 	}
 	if pos == 2 {
-		Rooms[roomNumber].Competition.Player2.connStatus = status
+		Rooms[roomNumber].Competition.Player2.ConnStatus = status
 	}
 }

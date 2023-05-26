@@ -8,19 +8,19 @@ import (
 
 type Player struct {
 	//玩家名称
-	username any
+	Username any `json:"username"`
 	//玩家就绪状态
 	Prepare bool `json:"prepare"`
 	//连接状态
-	connStatus bool
+	ConnStatus bool `json:"connStatus"`
 	//玩家分数
 	Score int `json:"score"`
 	//消耗时长
-	sumTime float64
+	SumTime float64 `json:"sumTime"`
 	//玩家是否开始
-	start bool
+	Start bool `json:"start"`
 	//玩家是否结束
-	end bool
+	End bool `json:"end"`
 }
 
 type Competition struct {
